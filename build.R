@@ -1,0 +1,2 @@
+library(knitr)
+library(rmarkdown)
