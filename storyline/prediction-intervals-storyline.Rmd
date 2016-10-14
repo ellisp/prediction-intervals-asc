@@ -1,0 +1,51 @@
+---
+title: "Pragmatic prediction intervals for time series ensemble forecasts"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+    mathjax: null
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(flexdashboard)
+```
+
+CTQ Row
+-----------------------------------------------------------------------
+
+### 
+
+#### Context
+
+It's well known that averages of an ensemble of time series model forecasts generally provides superior point estimates to the forecasts from its individual models.  It is also generally appreciated that predication intervals from individual models often have less than the advertised coverage due to failing to take model uncertainty into account.
+
+#### Trigger
+
+This is a conference about statistics and attendees are interested in whether a better method for estimating prediction intervals is possible.
+
+#### Question
+
+How well performing will be a conservative method of estimating prediction intervals for an ensemble, based on the widest coverage of the intervals provided by its component models?
+
+<div id="answer" class="alert alert-info">
+This method of determining prediction intervals provides coverage that is closer to the advertised level in many situations, but will provide intervals that are too wide for some high frequency and regularity time series.
+</div>
+
+
+Storyline Row
+-----------------------------------------------------------------------
+
+### Prediction intervals are important, and known to be problematic from stand methods
+
+* XXX
+
+### Tests against three large data collections show...
+
+* YYY
+
+### The method to do this is implemented in forecastHybrid
+
+* ZZZ
