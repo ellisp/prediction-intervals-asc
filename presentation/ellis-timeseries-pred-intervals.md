@@ -15,7 +15,7 @@ Ensemble time series work better than individual models
 
 ## For example:
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Sat Oct 15 14:44:44 2016 -->
+<!-- Sat Oct 15 15:33:24 2016 -->
 <table border=1>
 <tr> <th> model </th> <th> two </th> <th> four </th> <th> six </th> <th> eight </th>  </tr>
   <tr> <td> Theta </td> <td align="right"> 0.77 </td> <td align="right"> 1.06 </td> <td align="right"> 1.35 </td> <td align="right"> 1.62 </td> </tr>
@@ -59,12 +59,17 @@ This particular example is a combination of five forecast methods
 Let's test against a larger set of data
 ============
 
+Taking into account past findings that lower freqency data has an increased tendency to overestimate the coverage of forecast prediction intervals.
+
+- Makridiakis et al. (1987) 
+- Athanasopoulos et al (2011) 
+
 Data from forecasting competitions
 ========================
 transition: none
 ### M1
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Sat Oct 15 14:44:45 2016 -->
+<!-- Sat Oct 15 15:33:24 2016 -->
 <table border=1>
 <tr> <th>  </th> <th> Period </th> <th> DEMOGR </th> <th> INDUST </th> <th> INDUSTRIAL </th> <th> MACRO1 </th> <th> MACRO2 </th> <th> MICRO1 </th> <th> MICRO2 </th> <th> MICRO3 </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> MONTHLY </td> <td align="right"> 75 </td> <td align="right"> 183 </td> <td align="right"> 0 </td> <td align="right"> 64 </td> <td align="right"> 92 </td> <td align="right"> 10 </td> <td align="right"> 89 </td> <td align="right"> 104 </td> </tr>
@@ -78,7 +83,7 @@ Data from forecasting competitions
 transition: none
 ### M3
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Sat Oct 15 14:44:45 2016 -->
+<!-- Sat Oct 15 15:33:24 2016 -->
 <table border=1>
 <tr> <th>  </th> <th> Period </th> <th> DEMOGRAPHI- </th> <th> DEMOGRAPHIC </th> <th> FINANCE </th> <th> INDUSTRY </th> <th> MACRO </th> <th> MICRO </th> <th> OTHER </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> MONTHLY </td> <td align="right"> 0 </td> <td align="right"> 111 </td> <td align="right"> 145 </td> <td align="right"> 334 </td> <td align="right"> 312 </td> <td align="right"> 474 </td> <td align="right"> 52 </td> </tr>
@@ -93,7 +98,7 @@ Data from forecasting competitions
 transition: none
 ### Tourism
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Sat Oct 15 14:44:45 2016 -->
+<!-- Sat Oct 15 15:33:24 2016 -->
 <table border=1>
 <tr> <th>  </th> <th> Period </th> <th> TOURISM </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> MONTHLY </td> <td align="right"> 366 </td> </tr>
@@ -102,16 +107,53 @@ transition: none
    </table>
 Athanasopoulos et al, 2011
 
-M1
 =====================
-![m1](images/m1-results)
+![m1](images/m1-results.svg)
 
-M3
 =====================
-![m3](images/m3-results)
+![m3](images/m3-results.svg)
 
 
-Tourism
+
 =====================
-![tourism](images/tourism-results)
+![tourism](images/tourism-results.svg)
 
+
+Some examples of when it goes all wrong
+==========================
+
+===============
+![bad1](images/bad_2.svg)
+
+===============
+![bad2](images/bad_3.svg)
+
+===============
+![bad3](images/bad_4.svg)
+
+
+Summary of performance
+=================
+![combined](images/combined-results.svg)
+
+Conclusions
+=========================
+
+- Confirm that higher frequency leads to more accurate advertised coverage
+- Domain makes a real difference.  The original tourism data ETS prediction intervals have accurate or even better coverage than advertised for all seasonal data, but only for monthly in M3 and never in M1
+- For 80% prediction intervals and seasonal data, the trial method has too high coverage in the Tourism and M3 competitions, but not in M1
+- For non-seasonal data, even the trial method isn't conservative anough, in all three competitions, for 80% or 95% intervals
+- The trial conservative  method gives good results for 95% confidence intervals of seasonal data - better than the individual components
+
+Practical implications
+=====================
+- Ok (ie better than alternatives) to use this method for 95% confidence intervals...
+- ... and for 80% confidence intervals for quarterly and yearly data
+- but too conservative for monthly or more frequent 80% confidence intervals
+
+
+Not considered today
+====================
+- implications of having more than two models in the combination
+- Box-Cox transformations
+- what happens when seasonal data is aggregated up to lower frequency

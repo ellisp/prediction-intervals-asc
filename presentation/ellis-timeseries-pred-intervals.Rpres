@@ -63,6 +63,11 @@ This particular example is a combination of five forecast methods
 Let's test against a larger set of data
 ============
 
+Taking into account past findings that lower freqency data has an increased tendency to overestimate the coverage of forecast prediction intervals.
+
+- Makridiakis et al. (1987) 
+- Athanasopoulos et al (2011) 
+
 Data from forecasting competitions
 ========================
 transition: none
@@ -90,16 +95,53 @@ xtable(summary(tourism), digits = 0)
 ```
 Athanasopoulos et al, 2011
 
-M1
 =====================
-![m1](images/m1-results)
+![m1](images/m1-results.svg)
 
-M3
 =====================
-![m3](images/m3-results)
+![m3](images/m3-results.svg)
 
 
-Tourism
+
 =====================
-![tourism](images/tourism-results)
+![tourism](images/tourism-results.svg)
 
+
+Some examples of when it goes all wrong
+==========================
+
+===============
+![bad1](images/bad_2.svg)
+
+===============
+![bad2](images/bad_3.svg)
+
+===============
+![bad3](images/bad_4.svg)
+
+
+Summary of performance
+=================
+![combined](images/combined-results.svg)
+
+Conclusions
+=========================
+
+- Confirm that higher frequency leads to more accurate advertised coverage
+- Domain makes a real difference.  The original tourism data ETS prediction intervals have accurate or even better coverage than advertised for all seasonal data, but only for monthly in M3 and never in M1
+- For 80% prediction intervals and seasonal data, the trial method has too high coverage in the Tourism and M3 competitions, but not in M1
+- For non-seasonal data, even the trial method isn't conservative anough, in all three competitions, for 80% or 95% intervals
+- The trial conservative  method gives good results for 95% confidence intervals of seasonal data - better than the individual components
+
+Practical implications
+=====================
+- Ok (ie better than alternatives) to use this method for 95% confidence intervals...
+- ... and for 80% confidence intervals for quarterly and yearly data
+- but too conservative for monthly or more frequent 80% confidence intervals
+
+
+Not considered today
+====================
+- implications of having more than two models in the combination
+- Box-Cox transformations
+- what happens when seasonal data is aggregated up to lower frequency

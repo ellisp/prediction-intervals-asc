@@ -48,7 +48,7 @@ M1results <- parLapply(cluster,
 M1results_df <- do.call("rbind", M1results)
 names(M1results_df)[1:2] <- c("eighty", "ninetyfive")
 
-svg("presentation/images/m1-results.svg", 8, 5)
+svg("presentation/images/m1-results.svg", 10, 6.5)
 plot_cov(M1results_df) +
   ggtitle("Poor prediction interval coverage in the M1 competition")
 dev.off()
@@ -73,6 +73,14 @@ for(i in 1:nrow(zeroes)){
 }
 dev.off()
 
+for(i in 2:4){
+  svg(paste0("presentation/images/bad_", i, ".svg"), 10, 7)
+  par(family = "Calibri")
+  the_series <- M1[[zeroes[i, ]$sn]]
+  quiet <- coverage(the_series, plot = TRUE)
+  dev.off()
+}
+
 
 
 #---------------------------M3---------------------
@@ -83,9 +91,10 @@ M3results <- parLapply(cluster,
 M3results_df <- do.call("rbind", M3results)
 names(M3results_df)[1:2] <- c("eighty", "ninetyfive")
 
+svg("presentation/images/m3-results.svg", 10, 6.5)
 plot_cov(M3results_df) +
   ggtitle("Prediction intervals in the M3 competition")
-
+dev.off()
 #---------------tourism-------------------------
 Tresults <- parLapply(cluster,
                        tourism,
@@ -94,8 +103,10 @@ Tresults <- parLapply(cluster,
 Tresults_df <- do.call("rbind", Tresults)
 names(Tresults_df)[1:2] <- c("eighty", "ninetyfive")
 
+svg("presentation/images/tourism-results.svg", 10, 6.5)
 plot_cov(Tresults_df) +
   ggtitle("Prediction intervals performed well in the tourism competition")
+dev.off()
 
 # worst results?
 zeroes <- Tresults_df %>%
@@ -114,3 +125,17 @@ dev.off()
 
 
 stopCluster(cluster)
+
+
+
+#=============combine all three=============
+head(M1results_df)
+head(M3results_df)
+head(Tresults_df)
+
+combined <- rbind(M1results_df, M3results_df, Tresults_df)
+
+svg("presentation/images/combined-results.svg", 10, 6.5)
+plot_cov(combined) +
+  ggtitle("Coverage over all three competitions")
+dev.off()
