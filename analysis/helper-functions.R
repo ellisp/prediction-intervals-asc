@@ -1,4 +1,7 @@
-#=============helper functions===================
+theme_set(theme_light(base_family = "Calibri"))
+
+
+#=============prediction interval functions===================
 #' takes a forecast object, and the actual results, and returns a data frame
 #' binary indicator of success as well as the horizon for each row and an optional
 #' "type" column.
@@ -54,8 +57,12 @@ coverage <- function(the_series, plot = FALSE){
 
 #' takes the results from coverage calculations on an entire data collection
 #' (M3, M1 or Tourism) and produces a graphic summarising actual coverage
-plot_cov <- function(res_df){
+plot_cov <- function(res_df, hybridin = TRUE){
   names(res_df)[1:2] <- c("eighty", "ninetyfive")
+  if(!hybridin){
+    res_df <- filter(res_df, type != "Hybrid")
+  }
+  
   p <- res_df %>%
     group_by(h, period, type) %>%
     summarise(eighty = mean(eighty),
@@ -75,3 +82,54 @@ plot_cov <- function(res_df){
     labs(x = "Forecast horizon")
   return(p)
 }
+
+#===========point interval functions============
+# this is a reworked version of Tcomp::forecast_comp()
+accuracy_point <- function (the_series, tests = list(the_series$h)) {
+  x <- the_series$x
+  xx <- the_series$xx
+  h <- the_series$h
+  mod1 <- hybridModel(x, models ="ae")
+  fc1 <- forecast(mod1$auto.arima, h = h)
+  fc2 <- forecast(mod1$ets, h = h)
+  fc3 <- thetaf(x, h = h)
+  fc4 <- snaive(x, h = h)
+  fc5 <- forecast(mod1, h = h)
+  
+  
+  MASEs <- matrix(0, nrow = 5, ncol = length(tests))
+  for (j in 1:length(tests)) {
+    this_test <- tests[[j]]
+    MASEs[, j] <- c(accuracy(fc1, xx, test = this_test)["Test set", "MASE"], 
+                    accuracy(fc2, xx, test = this_test)["Test set", "MASE"], 
+                    accuracy(fc3, xx, test = this_test)["Test set", "MASE"], 
+                    accuracy(fc4, xx, test = this_test)["Test set", "MASE"],
+                    accuracy(fc5, xx, test = this_test)["Test set", "MASE"])                                                                                                                                                            
+  }
+  
+  colnames(MASEs) <- gsub(":", "-", as.character(tests))
+  rownames(MASEs) <- c("ARIMA", "ETS", "Theta", "Naive", "ARIMA-ETS average")
+  return(MASEs)
+}
+
+
+#=========convenience============
+summary.Mcomp <- function(dataobj){
+  require(dplyr)
+  require(tidyr)
+  tmp <- as.data.frame(t(sapply(dataobj, function(x){
+    return(c(x$type, x$period))
+  })))
+  
+  names(tmp) <- c("Type", "Period")
+  
+  tmp <- tmp %>%
+    group_by(Type, Period) %>%
+    summarise(count = length(Type)) %>%
+    spread(Type, count, fill = 0) %>%
+    as.data.frame()
+  
+  return(tmp)
+  
+}
+

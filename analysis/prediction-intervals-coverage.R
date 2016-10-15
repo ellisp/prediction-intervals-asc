@@ -12,8 +12,6 @@ library(grid)
 library(stringr)
 library(ggthemes)
 
-theme_set(theme_light(base_family = "Calibri"))
-
 source("analysis/helper-functions.R")
 
 #============trial runs===================
@@ -50,8 +48,15 @@ M1results <- parLapply(cluster,
 M1results_df <- do.call("rbind", M1results)
 names(M1results_df)[1:2] <- c("eighty", "ninetyfive")
 
+svg("presentation/images/m1-results.svg", 8, 5)
 plot_cov(M1results_df) +
   ggtitle("Poor prediction interval coverage in the M1 competition")
+dev.off()
+
+svg("presentation/images/m1-results-nohybrid.svg", 8, 5)
+plot_cov(M1results_df, hybridin = FALSE) +
+  ggtitle("Poor prediction interval coverage in the M1 competition") 
+dev.off()
 
 # worst results?
 zeroes <- M1results_df %>%
@@ -60,7 +65,7 @@ zeroes <- M1results_df %>%
             eighty = mean(eighty)) %>%
   filter(eighty == 0)
   
-CairoPDF("BadPredictionsM1.pdf", 11, 8)
+CairoPDF("misc-output/BadPredictionsM1.pdf", 11, 8)
 for(i in 1:nrow(zeroes)){
   par(family = "Calibri")
   the_series <- M1[[zeroes[i, ]$sn]]

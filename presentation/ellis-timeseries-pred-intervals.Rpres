@@ -4,25 +4,102 @@ author: Peter Ellis
 date: December 2016
 autosize: true
 
-First Slide
+```{r echo = FALSE}
+library(xtable)
+library(knitr)
+library(Mcomp)
+library(Tcomp)
+library(ggplot2)
+options(xtable.type = "html")
+opts_chunk$set(comment=NA, fig.width=7, fig.height=5, results = 'asis', echo = FALSE)
+source("../analysis/helper-functions.R")
+
+```
+
+
+Ensemble time series work better than individual models
 ========================================================
 
-For more details on authoring R presentations please visit <https://support.rstudio.com/hc/en-us/articles/200486468>.
+- Bates and Granger (1969) [The Combination of Forecasts](https://www.jstor.org/stable/3008764?seq=1#page_scan_tab_contents)
+- Many confirmations since.
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
-
-Slide With Code
-========================================================
-
+## For example:
 ```{r}
-summary(cars)
+load("data/results_point_df.rda")
+print(xtable(results_point_df), include.rownames = FALSE)
 ```
+*Mean absolute scaled error of forecasts for 756 quarterly series from the M3 competition, forecast horizon ranging from two to eight quarters.*
 
-Slide With Plot
-========================================================
 
-```{r, echo=FALSE}
-plot(cars)
+How to estimate prediction intervals?
+========================
+- Usually presumed some kind of weighted average of the components
+- Weights might be estimated based on in-sample errors
+
+But the components have poor coverage
+===========================
+
+For example from the M1 competition:
+
+![m1-nohybrid](images/m1-results-nohybrid.svg)
+
+Standard estimates for prediction intervals are conditional on the model being correct, despite the obvious randomness in model selection.
+
+A conservative alternative
+===================
+
+- Take the extremes of the combined prediction interval coverage of the components of the ensemble
+
+> "Those prediction intervals look dodgy because they are way too conservative. The package is taking the widest possible intervals that includes all the intervals produced by the individual models. So you only need one bad model, and the prediction intervals are screwed."
+
+
+Definitely too wide...
+============
+
+![dodgy](images/p_dodgy.svg)
+
+This particular example is a combination of five forecast methods
+
+Let's test against a larger set of data
+============
+
+Data from forecasting competitions
+========================
+transition: none
+### M1
+```{r}
+xtable(summary(M1), digits = 0)
 ```
+Makridakis et al, 1982
+
+Data from forecasting competitions
+============
+transition: none
+### M3
+```{r}
+xtable(summary(M3), digits = 0) 
+```
+Makridakis et al, 2000
+
+Data from forecasting competitions
+==============
+transition: none
+### Tourism
+```{r, message = FALSE}
+xtable(summary(tourism), digits = 0) 
+```
+Athanasopoulos et al, 2011
+
+M1
+=====================
+![m1](images/m1-results)
+
+M3
+=====================
+![m3](images/m3-results)
+
+
+Tourism
+=====================
+![tourism](images/tourism-results)
+
