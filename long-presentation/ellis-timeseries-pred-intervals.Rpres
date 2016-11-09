@@ -1,0 +1,220 @@
+Prediction intervals for ensemble time series forecasts
+========================================================
+author: Peter Ellis
+date: December 2016
+autosize: true
+
+```{r echo = FALSE}
+library(xtable)
+library(knitr)
+library(Mcomp)
+library(Tcomp)
+library(forecastxgb)
+library(ggplot2)
+library(extrafont)
+options(xtable.type = "html")
+opts_chunk$set(comment=NA, fig.width=12, fig.height=8, results = 'asis', echo = FALSE, cache = TRUE)
+knit_hooks$set(mypar = function(before, options, envir) {
+    if (before) par(bty = "l", family = "Calibri")
+})
+
+source("../analysis/helper-functions.R")
+
+```
+
+
+Today's key messages:
+=====================================================
+
+- The only credible way to seriously test time series forecasts is against large collections of real life datasets
+- The average value of an ensemble of forecasts often out-performs individual results for point accuracy
+- The actual coverage of prediction intervals should be a key part of assessing performance but is often neglected
+- Prediction intervals from individual models often have very poor (less than advertised) actual coverage
+- Better prediction interval performance is possible in some situations by a conservative combination of the prediction intervals from component models
+- The `forecastHybrid` R package facilitates this
+
+
+Data from forecasting competitions
+========================
+transition: none
+### M1
+```{r}
+xtable(summary(M1), digits = 0)
+```
+Makridakis et al, 1982
+
+Data from forecasting competitions
+============
+transition: none
+### M3
+```{r}
+xtable(summary(M3), digits = 0) 
+```
+Makridakis et al, 2000
+
+Data from forecasting competitions
+==============
+transition: none
+### Tourism
+```{r, message = FALSE}
+xtable(summary(tourism), digits = 0) 
+```
+Athanasopoulos et al, 2011
+
+UNITED NATIONS COPPER ORE PRODUCTION CANADA
+==========================
+
+```{r results = 'hide', echo = TRUE}
+forecast_comp(M1[[650]], plot = TRUE) 
+```
+
+RATIO CIVILIAN EMPLOYMENT TO TOTAL WORKING AGE POPULATION
+==========================
+
+```{r results = 'hide', echo = TRUE}
+forecast_comp(M1[[1000]], plot = TRUE) 
+```
+
+
+
+
+Ensemble time series work better than individual models
+========================================================
+
+- Bates and Granger (1969) [The Combination of Forecasts](https://www.jstor.org/stable/3008764?seq=1#page_scan_tab_contents)
+- Many confirmations since.
+
+## For example:
+```{r}
+load("data/results_point_df.rda")
+print(xtable(results_point_df), include.rownames = FALSE)
+```
+*Mean absolute scaled error of forecasts for 756 quarterly series from the M3 competition, forecast horizon ranging from two to eight quarters.*
+
+
+===================================================
+
+```{r}
+leg <- "f: Theta; forecast::thetaf\na: ARIMA; forecast::auto.arima
+n: Neural network; forecast::nnetar\nx: Extreme gradient boosting; forecastxgb::xgbts"
+
+ggplot(Tcomp_results, aes(x = model, y =  MASE, colour = Frequency, label = model)) +
+  geom_text(size = 4) +
+  geom_line(aes(x = as.numeric(model)), alpha = 0.25) +
+  annotate("text", x = 2, y = 3.5, label = leg, hjust = 0) +
+  ggtitle("Average error of four different timeseries forecasting methods
+2010 Tourism Forecasting Competition data") +
+  labs(x = "Model, or ensemble of models
+(further to the left means better overall performance)",
+  y = "Mean scaled absolute error\n(smaller numbers are better)") +
+  theme_light(12)
+```
+
+=================================
+
+```{r}
+ggplot(Mcomp_results, aes(x = model, y =  MASE, colour = Frequency, label = model)) +
+  geom_text(size = 4) +
+  geom_line(aes(x = as.numeric(model)), alpha = 0.25) +
+  annotate("text", x = 2, y = 3.5, label = leg, hjust = 0) +
+  ggtitle("Average error of four different timeseries forecasting methods
+M3 Forecasting Competition data") +
+  labs(x = "Model, or ensemble of models
+(further to the left means better overall performance)",
+  y = "Mean scaled absolute error\n(smaller numbers are better)") +
+  theme_light(12)
+```
+
+
+
+How to estimate prediction intervals?
+========================
+- Usually presumed some kind of weighted average of the components
+- Weights might be estimated based on in-sample errors
+
+But the components have poor coverage. 
+===========================
+
+![m1-nohybrid](images/m1-results-nohybrid.svg)
+
+Standard estimates for prediction intervals are conditional on the model being correct, despite the obvious randomness in model selection.
+
+A conservative alternative
+===================
+
+- Take the extremes of the combined prediction interval coverage of the components of the ensemble
+
+> "Those prediction intervals look dodgy because they are way too conservative. The package is taking the widest possible intervals that includes all the intervals produced by the individual models. So you only need one bad model, and the prediction intervals are screwed."
+
+
+Definitely too wide...
+============
+
+![dodgy](images/p_dodgy.svg)
+
+This particular example is a combination of five forecast methods
+
+Let's test against a larger set of data
+============
+
+Taking into account past findings that lower freqency data has an increased tendency to overestimate the coverage of forecast prediction intervals.
+
+- Makridiakis et al. (1987) 
+- Athanasopoulos et al (2011) 
+
+
+=====================
+![m1](images/m1-results.svg)
+
+=====================
+![m3](images/m3-results.svg)
+
+
+
+=====================
+![tourism](images/tourism-results.svg)
+
+
+Some examples of when it goes all wrong
+==========================
+
+===============
+![bad1](images/bad_2.svg)
+
+===============
+![bad2](images/bad_3.svg)
+
+===============
+![bad3](images/bad_4.svg)
+
+
+Summary of performance
+=================
+![combined](images/combined-results.svg)
+
+Conclusions
+=========================
+
+- Confirm that higher frequency leads to more accurate advertised coverage
+- Domain makes a real difference.  The original tourism data ETS prediction intervals have accurate or even better coverage than advertised for all seasonal data, but only for monthly in M3 and never in M1
+- For 80% prediction intervals and seasonal data, the trial method has too high coverage in the Tourism and M3 competitions, but not in M1
+- For non-seasonal data, even the trial method isn't conservative anough, in all three competitions, for 80% or 95% intervals
+- The trial conservative  method gives good results for 95% confidence intervals of seasonal data - better than the individual components
+
+Practical implications
+=====================
+- Ok (ie better than alternatives) to use this method for 95% confidence intervals...
+- ... and for 80% confidence intervals for quarterly and yearly data
+- but too conservative for monthly or more frequent 80% confidence intervals
+
+
+Not considered today
+====================
+- implications of having more than two models in the combination
+- Box-Cox transformations
+- what happens when seasonal data is aggregated up to lower frequency
+- implications of coordination by hierarchy (`hts`) or temporal aggregation (`thief`)
+
+Summary of performance
+=================
+![combined](images/combined-results.svg)

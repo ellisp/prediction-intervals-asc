@@ -1,0 +1,15 @@
+base
+knitr
+xtable
+tseries
+zoo
+timeDate
+forecast
+Mcomp
+Tcomp
+xgboost
+forecastxgb
+ggplot2
+extrafont
+dplyr
+tidyr
