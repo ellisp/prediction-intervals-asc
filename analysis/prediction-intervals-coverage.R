@@ -15,10 +15,22 @@ library(ggthemes)
 source("analysis/helper-functions.R")
 
 #============trial runs===================
+
+svg("long-presentation/images/good1.svg", 10, 6.5)
 coverage(M1[[59]], plot = TRUE)
+dev.off()
+
+svg("long-presentation/images/good2.svg", 10, 6.5)
 coverage(M3[[2000]], plot = TRUE)
+dev.off()
+
+svg("long-presentation/images/good3.svg", 10, 6.5)
 coverage(M1[[450]], plot = TRUE)
+dev.off()
+
+svg("long-presentation/images/good4.svg", 10, 6.5)
 coverage(tourism$M13, plot = TRUE)
+dev.off()
 
 smallM3 <- list(M3[[1]], M3[[500]])
 

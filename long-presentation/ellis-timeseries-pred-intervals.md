@@ -7,18 +7,9 @@ autosize: true
 
 
 
-Today's key messages:
-=====================================================
-
-- The only credible way to seriously test time series forecasts is against large collections of real life datasets
-- The average value of an ensemble of forecasts often out-performs individual results for point accuracy
-- The actual coverage of prediction intervals should be a key part of assessing performance but is often neglected
-- Prediction intervals from individual models often have very poor (less than advertised) actual coverage
-- Better prediction interval performance is possible in some situations by a conservative combination of the prediction intervals from component models
-- The `forecastHybrid` R package facilitates this
 
 
-Data from forecasting competitions
+The only credible test...
 ========================
 transition: none
 ### M1
@@ -32,7 +23,7 @@ transition: none
    </table>
 Makridakis et al, 1982
 
-Data from forecasting competitions
+The only credible test...
 ============
 transition: none
 ### M3
@@ -47,7 +38,7 @@ transition: none
    </table>
 Makridakis et al, 2000
 
-Data from forecasting competitions
+The only credible test...
 ==============
 transition: none
 ### Tourism
@@ -129,7 +120,7 @@ Standard estimates for prediction intervals are conditional on the model being c
 A conservative alternative
 ===================
 
-- Take the extremes of the combined prediction interval coverage of the components of the ensemble
+- Take the extremes of the combined prediction interval coverage of the components of the ensemble - but:
 
 > "Those prediction intervals look dodgy because they are way too conservative. The package is taking the widest possible intervals that includes all the intervals produced by the individual models. So you only need one bad model, and the prediction intervals are screwed."
 
@@ -160,6 +151,22 @@ Taking into account past findings that lower freqency data has an increased tend
 
 =====================
 ![tourism](images/tourism-results.svg)
+
+When it works
+===================
+
+================
+![good1](images/good1.svg)
+
+================
+![good2](images/good2.svg)
+
+================
+![good3](images/good3.svg)
+
+
+================
+![good4](images/good4.svg)
 
 
 Some examples of when it goes all wrong
@@ -201,6 +208,18 @@ Not considered today
 - Box-Cox transformations
 - what happens when seasonal data is aggregated up to lower frequency
 - implications of coordination by hierarchy (`hts`) or temporal aggregation (`thief`)
+
+
+Today's key messages:
+=====================================================
+
+- The only credible way to seriously test time series forecasts is against large collections of real life datasets
+- The average value of an ensemble of forecasts often out-performs individual results for point accuracy
+- The actual coverage of prediction intervals should be a key part of assessing performance but is often neglected
+- Prediction intervals from individual models often have very poor (less than advertised) actual coverage
+- Better prediction interval performance is possible in some situations by a conservative combination of the prediction intervals from component models
+- The `forecastHybrid` R package facilitates this
+
 
 Summary of performance
 =================

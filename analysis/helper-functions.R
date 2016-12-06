@@ -1,4 +1,7 @@
-theme_set(theme_light(base_family = "Calibri"))
+theme_set(theme_light(base_family = "Calibri") + 
+            theme(legend.position = "bottom") +
+            theme(plot.caption = element_text(colour = "grey50"))) 
+update_geom_defaults("text", list(family = "Calibri"))
 
 
 #=============prediction interval functions===================
